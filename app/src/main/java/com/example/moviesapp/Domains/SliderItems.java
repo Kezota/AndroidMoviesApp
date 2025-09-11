@@ -8,6 +8,11 @@ public class SliderItems {
     private String year;
     private String time;
 
+    // No-argument constructor (required for Firebase)
+    public SliderItems() {
+
+    }
+
     public SliderItems(String image, String name, String genre, String age, String year, String time) {
         this.image = image;
         this.name = name;
