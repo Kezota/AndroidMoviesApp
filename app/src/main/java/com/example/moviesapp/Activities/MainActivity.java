@@ -9,12 +9,15 @@ import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.moviesapp.Adapters.FilmListAdapter;
 import com.example.moviesapp.Adapters.SliderAdapter;
+import com.example.moviesapp.Domains.Film;
 import com.example.moviesapp.Domains.SliderItems;
 import com.example.moviesapp.databinding.ActivityMainBinding;
 import com.google.firebase.FirebaseApp;
@@ -51,14 +54,110 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         initBanner();
+        initTopMoving();
+        initUpcoming();
+    }
+
+    private void initTopMoving() {
+        DatabaseReference myRef = database.getReference("Items");
+        binding.progressBarTop.setVisibility(View.VISIBLE);
+        ArrayList<Film> items = new ArrayList<>();
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    items.clear();
+                    try {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Film item = dataSnapshot.getValue(Film.class);
+                            if (item != null) {
+                                items.add(item);
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e("FIREBASE", "Exception in parsing: " + e.getMessage());
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            for (DataSnapshot child : dataSnapshot.getChildren()) {
+                                Film item = child.getValue(Film.class);
+                                if (item != null) {
+                                    items.add(item);
+                                }
+                            }
+                        }
+                    }
+
+                    if (!items.isEmpty()) {
+                        binding.recyclerViewTopMovies.setLayoutManager(new LinearLayoutManager(MainActivity.this,
+                                LinearLayoutManager.HORIZONTAL, false));
+                        binding.recyclerViewTopMovies.setAdapter(new FilmListAdapter(items));
+                    }
+
+                    binding.progressBarTop.setVisibility(View.GONE);
+                } else {
+                    Log.d("FIREBASE", "No data found at the reference");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("FIREBASE", "Error: " + error.getMessage());
+            }
+        });
+    }
+
+    private void initUpcoming() {
+        DatabaseReference myRef = database.getReference("Upcomming");
+        binding.progressBarUpcoming.setVisibility(View.VISIBLE);
+        ArrayList<Film> items = new ArrayList<>();
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    items.clear();
+                    try {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Film item = dataSnapshot.getValue(Film.class);
+                            if (item != null) {
+                                items.add(item);
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e("FIREBASE", "Exception in parsing: " + e.getMessage());
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            for (DataSnapshot child : dataSnapshot.getChildren()) {
+                                Film item = child.getValue(Film.class);
+                                if (item != null) {
+                                    items.add(item);
+                                }
+                            }
+                        }
+                    }
+
+                    if (!items.isEmpty()) {
+                        binding.recyclerViewUpcoming.setLayoutManager(new LinearLayoutManager(MainActivity.this,
+                                LinearLayoutManager.HORIZONTAL, false));
+                        binding.recyclerViewUpcoming.setAdapter(new FilmListAdapter(items));
+                    }
+
+                    binding.progressBarUpcoming.setVisibility(View.GONE);
+                } else {
+                    Log.d("FIREBASE", "No data found at the reference");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("FIREBASE", "Error: " + error.getMessage());
+            }
+        });
     }
 
     private void initBanner() {
         DatabaseReference myRef = database.getReference("Banners");
         binding.progressBarBanner.setVisibility(View.VISIBLE);
         ArrayList<SliderItems> items = new ArrayList<>();
-
-        Log.d("FIREBASE", "initBanner() called");
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
