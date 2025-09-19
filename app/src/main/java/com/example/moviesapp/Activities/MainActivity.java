@@ -20,7 +20,6 @@ import com.example.moviesapp.Adapters.SliderAdapter;
 import com.example.moviesapp.Domains.Film;
 import com.example.moviesapp.Domains.SliderItems;
 import com.example.moviesapp.databinding.ActivityMainBinding;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
